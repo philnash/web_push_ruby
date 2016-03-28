@@ -1,6 +1,5 @@
 require "web_push/version"
 
-
 module WebPush
   # Yields the module itself so that it can be configured using a block
   #
