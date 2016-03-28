@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Web Push test</title>
+</head>
+<body>
+  <h1>Web Push test</h1>
+
+  <p>This is a minimal example to test the web_push library.</p>
+
+  <button id="register">Register Service Worker</button>
+  <button id="send" disabled>Send Push Notification</button>
+
+  <script>
+    var registerButton = document.getElementById("register");
+    var sendButton = document.getElementById("send");
+
+    registerButton.addEventListener("click", function(event) {
+      swPromise = navigator.serviceWorker.register("/sw.js");
+      swPromise.then(function(registration) {
+        return registration.pushManager.subscribe({ userVisibleOnly: true });
+      }).then(function(subscription) {
+        var endpoint = subscription.endpoint;
+        return fetch("/sub?endpoint=" + endpoint);
+      }).then(function(response) {
+        console.log("Subscription saved");
+        sendButton.removeAttribute("disabled");
+      }).catch(function(err) {
+        console.error("Something went wrong: " + err);
+      })
+    });
+    
+    sendButton.addEventListener("click", function(event) {
+      fetch("/push", { method: "POST" }).then(function(response) {
+        console.log("Pushed");
+      });
+    });
+  </script>
+</body>
+</html>
